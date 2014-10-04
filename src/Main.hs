@@ -5,6 +5,7 @@ import Graphics.UI.SDL.Image as Img
 import Data.Bits
 import Foreign
 import Foreign.C
+import Control.Monad.Fix (fix)
 
 main :: IO ()
 main = do
@@ -20,9 +21,18 @@ main = do
   0 <- SDL.renderClear rend
   0 <- SDL.renderCopy rend tex nullPtr nullPtr
   SDL.renderPresent rend
-  Img.imgQuit
-  SDL.delay 3000
-  SDL.quit
+  alloca $ \pevt ->
+    fix $ \go -> do
+      e <- pollEvent pevt
+      if e == 1
+        then do
+          evt <- peek pevt
+          case evt of
+            QuitEvent {} -> do
+              Img.imgQuit
+              SDL.quit
+            _ -> go
+        else go
 
 {-
 data Event
