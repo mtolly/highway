@@ -5,7 +5,7 @@ import Graphics.UI.SDL.Image as Img
 import Data.Bits
 import Foreign
 import Foreign.C
-import Control.Monad.Fix (fix)
+import Control.Monad (when)
 
 main :: IO ()
 main = do
@@ -21,8 +21,9 @@ main = do
   0 <- SDL.renderClear rend
   0 <- SDL.renderCopy rend tex nullPtr nullPtr
   SDL.renderPresent rend
-  alloca $ \pevt ->
-    fix $ \go -> do
+  alloca $ \pevt -> let
+    update = do
+      start <- SDL.getTicks
       e <- pollEvent pevt
       if e == 1
         then do
@@ -31,8 +32,15 @@ main = do
             QuitEvent {} -> do
               Img.imgQuit
               SDL.quit
-            _ -> go
-        else go
+            _ -> wait start
+        else wait start
+    wait start = do
+      end <- SDL.getTicks
+      let procTime = end - start
+      when (frame > procTime) $ SDL.delay $ frame - procTime
+      update
+    frame = 1000 `quot` 60 :: Word32
+    in update
 
 {-
 data Event
