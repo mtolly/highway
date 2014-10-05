@@ -89,3 +89,12 @@ moveForward t g = let
     { _position = _position g + t
     , _combo = if missedNumber == 0 then _combo g else 0
     }
+
+origin :: Game
+origin = Game
+  { _events = Map.empty
+  , _position = 0
+  , _score = 0
+  , _combo = 0
+  , _window = 1 / 10
+  }

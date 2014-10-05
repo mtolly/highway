@@ -7,7 +7,7 @@ import Foreign
 import Foreign.C
 import Control.Monad (when)
 
-import Drums ()
+import qualified Drums as D
 
 main :: IO ()
 main = do
@@ -19,27 +19,36 @@ main = do
       SDL.createWindow title undef undef 640 480 0
   rend <- throwIfNull "Couldn't make renderer" $
     SDL.createRenderer window (-1) SDL.rendererFlagAccelerated
+  drawSensei rend
+  doFrame $ \cont -> do
+    e <- getEvent
+    case e of
+      Just evt -> case evt of
+        QuitEvent {} -> Img.imgQuit >> SDL.quit
+        _ -> cont
+      Nothing -> cont
+
+getEvent :: IO (Maybe SDL.Event)
+getEvent = alloca $ \pevt -> do
+  e <- pollEvent pevt
+  if e == 1
+    then fmap Just $ peek pevt
+    else return Nothing
+
+drawSensei :: SDL.Renderer -> IO ()
+drawSensei rend = do
   Right tex <- Img.imgLoadTexture rend "chinaman.png"
   0 <- SDL.renderClear rend
   0 <- SDL.renderCopy rend tex nullPtr nullPtr
   SDL.renderPresent rend
-  alloca $ \pevt -> let
-    update = do
-      start <- SDL.getTicks
-      e <- pollEvent pevt
-      if e == 1
-        then do
-          evt <- peek pevt
-          case evt of
-            QuitEvent {} -> do
-              Img.imgQuit
-              SDL.quit
-            _ -> wait start
-        else wait start
-    wait start = do
-      end <- SDL.getTicks
-      let procTime = end - start
-      when (frame > procTime) $ SDL.delay $ frame - procTime
-      update
-    frame = 1000 `quot` 60 :: Word32
-    in update
+  return ()
+
+doFrame :: (IO () -> IO ()) -> IO ()
+doFrame f = do
+  start <- SDL.getTicks
+  f $ do
+    end <- SDL.getTicks
+    let procTime = end - start
+        frame = 1000 `quot` 60
+    when (frame > procTime) $ SDL.delay $ frame - procTime
+    doFrame f
