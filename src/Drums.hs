@@ -92,7 +92,11 @@ moveForward t g = let
 
 origin :: Game
 origin = Game
-  { _events = Map.empty
+  { _events = Map.fromList
+    [ (4, [Unplayed Snare])
+    , (8, [Unplayed Kick, Unplayed Ride])
+    , (12, [Unplayed Snare])
+    ]
   , _position = 0
   , _score = 0
   , _combo = 0

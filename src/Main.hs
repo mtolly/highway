@@ -5,7 +5,8 @@ import qualified Graphics.UI.SDL.Image as Img
 import Data.Bits
 import Foreign
 import Foreign.C
-import Control.Monad (when)
+import Control.Monad (when, forM_)
+import qualified Data.Map as Map
 
 import qualified Drums as D
 
@@ -26,7 +27,7 @@ main = do
         e <- getEvent
         case e of
           Just evt -> case evt of
-            SDL.QuitEvent {} -> Img.imgQuit >> SDL.quit
+            SDL.QuitEvent {} -> print g >> Img.imgQuit >> SDL.quit
             SDL.KeyboardEvent {}
               | SDL.eventType evt == SDL.eventTypeKeyDown
               && SDL.keyboardEventRepeat evt == 0
@@ -52,7 +53,31 @@ main = do
         ]
 
       draw :: D.Game -> IO ()
-      draw _ = return ()
+      draw game = do
+        let yPos pad = fromIntegral $ 50 * fromEnum pad
+            xPos secs = round $ 200 + (secs - D._position game) * 300
+        0 <- SDL.setRenderDrawColor rend 0 0 0 255
+        0 <- SDL.renderClear rend
+        0 <- SDL.setRenderDrawColor rend 255 255 255 255
+        0 <- alloca $ \prect -> do
+          poke prect $ SDL.Rect (xPos $ D._position game) 0 10 480
+          SDL.renderFillRect rend prect
+        forM_ (Map.toList $ D._events game) $ \(secs, things) ->
+          forM_ things $ \thing -> do
+            let thingPad = case thing of
+                  D.Unplayed p -> p
+                  D.Played   p -> p
+                  D.Overhit  p -> p
+                (r, g, b) = case thing of
+                  D.Unplayed _ -> (255, 0, 0)
+                  D.Played _ -> (0, 255, 0)
+                  D.Overhit _ -> (0, 0, 255)
+            0 <- SDL.setRenderDrawColor rend r g b 255
+            alloca $ \prect -> do
+              poke prect $ SDL.Rect (xPos secs) (yPos thingPad) 10 10
+              0 <- SDL.renderFillRect rend prect
+              return ()
+        SDL.renderPresent rend
 
       doFrame :: D.Game -> Word32 -> IO ()
       doFrame g t = do
