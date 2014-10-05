@@ -24,7 +24,7 @@ main = do
 
   let poll :: D.Game -> (D.Game -> IO ()) -> IO ()
       poll g cont = do
-        e <- getEvent
+        e <- pollEvent
         case e of
           Just evt -> case evt of
             SDL.QuitEvent {} -> print g >> Img.imgQuit >> SDL.quit
@@ -59,9 +59,7 @@ main = do
         0 <- SDL.setRenderDrawColor rend 0 0 0 255
         0 <- SDL.renderClear rend
         0 <- SDL.setRenderDrawColor rend 255 255 255 255
-        0 <- alloca $ \prect -> do
-          poke prect $ SDL.Rect (xPos $ D._position game) 0 10 480
-          SDL.renderFillRect rend prect
+        renderFillRect rend $ SDL.Rect (xPos $ D._position game) 0 10 480
         forM_ (Map.toList $ D._events game) $ \(secs, things) ->
           forM_ things $ \thing -> do
             let thingPad = case thing of
@@ -73,10 +71,7 @@ main = do
                   D.Played _ -> (0, 255, 0)
                   D.Overhit _ -> (0, 0, 255)
             0 <- SDL.setRenderDrawColor rend r g b 255
-            alloca $ \prect -> do
-              poke prect $ SDL.Rect (xPos secs) (yPos thingPad) 10 10
-              0 <- SDL.renderFillRect rend prect
-              return ()
+            renderFillRect rend $ SDL.Rect (xPos secs) (yPos thingPad) 10 10
         SDL.renderPresent rend
 
       doFrame :: D.Game -> Word32 -> IO ()
@@ -90,8 +85,14 @@ main = do
 
   SDL.getTicks >>= doFrame D.origin
 
-getEvent :: IO (Maybe SDL.Event)
-getEvent = alloca $ \pevt -> do
+renderFillRect :: SDL.Renderer -> SDL.Rect -> IO ()
+renderFillRect rend rect = alloca $ \prect -> do
+  poke prect rect
+  0 <- SDL.renderFillRect rend prect
+  return ()
+
+pollEvent :: IO (Maybe SDL.Event)
+pollEvent = alloca $ \pevt -> do
   e <- SDL.pollEvent pevt
   if e == 1
     then fmap Just $ peek pevt
