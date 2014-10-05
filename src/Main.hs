@@ -7,6 +7,8 @@ import Foreign
 import Foreign.C
 import Control.Monad (when)
 
+import Drums ()
+
 main :: IO ()
 main = do
   0 <- SDL.init $ SDL.initFlagTimer .|. SDL.initFlagVideo
@@ -41,28 +43,3 @@ main = do
       update
     frame = 1000 `quot` 60 :: Word32
     in update
-
-{-
-data Event
-  = Hit       (Either Drum Cymbal)
-  | RollStart (Either Drum Cymbal)
-  | RollEnd   (Either Drum Cymbal)
-  | Choke     Cymbal
-  | HihatF
-  deriving (Eq, Ord, Show, Read)
-
-data Drum
-  = Kick
-  | Snare
-  | HihatC
-  | HihatO
-  | Tom1
-  | Tom2
-  | Tom3
-  deriving (Eq, Ord, Show, Read)
-
-data Cymbal
-  = Crash
-  | Ride
-  deriving (Eq, Ord, Show, Read)
--}
