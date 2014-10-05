@@ -19,7 +19,7 @@ data Pad
 
 data Thing
   = Unplayed Pad
-  | Played   Pad
+  | Played   Pad Rational
   | Overhit  Pad
   deriving (Eq, Ord, Show, Read)
 
@@ -52,8 +52,9 @@ hit pad g = let
   targets = [ t | (t, xs) <- Map.toList hitWindow, Unplayed pad `elem` xs ]
   targets' = sortBy (comparing $ \t -> abs $ t - _position g) targets
   addOverhit xs = Just $ Overhit pad : fromMaybe [] xs
-  addPlay = fmap $ map $ \e -> case e of
-    Unplayed p | p == pad -> Played p
+  addPlay :: Rational -> Maybe [Thing] -> Maybe [Thing]
+  addPlay t = fmap $ map $ \e -> case e of
+    Unplayed p | p == pad -> Played p $ _position g - t
     _                     -> e
   multiplier =
     if      _combo g < 10 then 1
@@ -66,7 +67,7 @@ hit pad g = let
       , _combo  = 0
       }
     t : _ -> g
-      { _events = Map.alter addPlay t $ _events g
+      { _events = Map.alter (addPlay t) t $ _events g
       , _combo  = _combo g + 1
       , _score  = _score g + 100 * multiplier
       }

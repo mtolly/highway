@@ -63,13 +63,13 @@ main = do
         forM_ (Map.toList $ D._events game) $ \(secs, things) ->
           forM_ things $ \thing -> do
             let thingPad = case thing of
-                  D.Unplayed p -> p
-                  D.Played   p -> p
-                  D.Overhit  p -> p
+                  D.Unplayed p   -> p
+                  D.Played   p _ -> p
+                  D.Overhit  p   -> p
                 (r, g, b) = case thing of
-                  D.Unplayed _ -> (255, 0, 0)
-                  D.Played _ -> (0, 255, 0)
-                  D.Overhit _ -> (0, 0, 255)
+                  D.Unplayed {} -> (255, 0, 0)
+                  D.Played   {} -> (0, 255, 0)
+                  D.Overhit  {} -> (0, 0, 255)
             0 <- SDL.setRenderDrawColor rend r g b 255
             renderFillRect rend $ SDL.Rect (xPos secs) (yPos thingPad) 10 10
         SDL.renderPresent rend
