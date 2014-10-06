@@ -1,0 +1,15 @@
+- $width = 640
+- $height = 480
+- $lanes = [3, 2, 2, 3, 3, 3, 2]
+- def laneFraction(n)
+  - $lanes[0...n].inject(:+).to_f / $lanes.inject(:+)
+- def laneX(padding, n)
+  - padding + laneFraction(n) * ($width - padding * 2)
+%svg{ width: $width, height: $height, version: '1.1', xmlns: 'http://www.w3.org/2000/svg' }
+  :css
+    .thick { stroke-width: 3; stroke: black; }
+  %line.thick{ x1: 200, x2: $width - 200, y1: 130, y2: 130 }
+  %line.thick{ x1: 200, x2: 85, y1: 130, y2: $height }
+  %line.thick{ x1: $width - 200, x2: $width - 85, y1: 130, y2: $height }
+  - (1 ... $lanes.length).each do |n|
+    %line.thick{ x1: laneX(200, n), x2: laneX(85, n), y1: 130, y2: $height }

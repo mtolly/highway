@@ -1,0 +1,14 @@
+<svg height='480' version='1.1' width='640' xmlns='http://www.w3.org/2000/svg'>
+  <style>
+    .thick { stroke-width: 3; stroke: black; }
+  </style>
+  <line class='thick' x1='200' x2='440' y1='130' y2='130'></line>
+  <line class='thick' x1='200' x2='85' y1='130' y2='480'></line>
+  <line class='thick' x1='440' x2='555' y1='130' y2='480'></line>
+  <line class='thick' x1='240.0' x2='163.33333333333331' y1='130' y2='480'></line>
+  <line class='thick' x1='266.6666666666667' x2='215.55555555555557' y1='130' y2='480'></line>
+  <line class='thick' x1='293.3333333333333' x2='267.77777777777777' y1='130' y2='480'></line>
+  <line class='thick' x1='333.33333333333337' x2='346.11111111111114' y1='130' y2='480'></line>
+  <line class='thick' x1='373.33333333333337' x2='424.44444444444446' y1='130' y2='480'></line>
+  <line class='thick' x1='413.3333333333333' x2='502.77777777777777' y1='130' y2='480'></line>
+</svg>
