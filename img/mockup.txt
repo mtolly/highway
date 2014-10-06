@@ -1,0 +1,6 @@
+window: 640 by 480
+top of highway: 130 y
+gap next to highway on screen bottom: 85 x
+gap next to highway at highway top: 200 x
+now bar: 390 y
+cymbals should be 2/3 width of snare/toms

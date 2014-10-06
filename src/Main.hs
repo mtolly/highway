@@ -100,7 +100,7 @@ pollEvent = alloca $ \pevt -> do
 
 drawSensei :: SDL.Renderer -> IO ()
 drawSensei rend = do
-  Right tex <- Img.imgLoadTexture rend "chinaman.png"
+  Right tex <- Img.imgLoadTexture rend "img/sensei.png"
   0 <- SDL.renderClear rend
   0 <- SDL.renderCopy rend tex nullPtr nullPtr
   SDL.renderPresent rend
