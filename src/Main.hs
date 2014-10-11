@@ -73,6 +73,9 @@ main = do
                   D.Overhit  {} -> (0, 0, 255)
             0 <- SDL.setRenderDrawColor rend r g b 255
             renderFillRect rend $ SDL.Rect (xPos thingPad) (yPos secs) 10 10
+        0 <- SDL.setRenderDrawColor rend 255 255 0 255
+        forM_ [1 .. D._combo game] $ \n ->
+          renderFillRect rend $ SDL.Rect (fromIntegral n * 10) 10 8 8
         SDL.renderPresent rend
 
       doFrame :: D.Game -> Word32 -> IO ()
