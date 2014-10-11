@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Drums where
 
 import qualified Data.Map as Map

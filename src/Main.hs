@@ -9,6 +9,7 @@ import Control.Monad (when, forM_)
 import qualified Data.Map as Map
 
 import qualified Drums as D
+import qualified Load
 
 main :: IO ()
 main = do
@@ -83,7 +84,8 @@ main = do
           let g'' = D.moveForward (fromIntegral (t' - t) / 1000) g'
           doFrame g'' t'
 
-  SDL.getTicks >>= doFrame D.origin
+  game <- Load.loadGame "notes.mid"
+  SDL.getTicks >>= doFrame game
 
 renderFillRect :: SDL.Renderer -> SDL.Rect -> IO ()
 renderFillRect rend rect = alloca $ \prect -> do
