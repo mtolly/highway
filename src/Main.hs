@@ -55,12 +55,12 @@ main = do
 
       draw :: D.Game -> IO ()
       draw game = do
-        let yPos pad = fromIntegral $ 50 * fromEnum pad
-            xPos secs = round $ 200 + (secs - D._position game) * 300
+        let xPos pad = fromIntegral $ 50 * fromEnum pad
+            yPos secs = (480 -) $ round $ 200 + (secs - D._position game) * 300
         0 <- SDL.setRenderDrawColor rend 0 0 0 255
         0 <- SDL.renderClear rend
         0 <- SDL.setRenderDrawColor rend 255 255 255 255
-        renderFillRect rend $ SDL.Rect (xPos $ D._position game) 0 10 480
+        renderFillRect rend $ SDL.Rect 0 (yPos $ D._position game) 480 10
         forM_ (Map.toList $ D._events game) $ \(secs, things) ->
           forM_ things $ \thing -> do
             let thingPad = case thing of
@@ -72,7 +72,7 @@ main = do
                   D.Played   {} -> (0, 255, 0)
                   D.Overhit  {} -> (0, 0, 255)
             0 <- SDL.setRenderDrawColor rend r g b 255
-            renderFillRect rend $ SDL.Rect (xPos secs) (yPos thingPad) 10 10
+            renderFillRect rend $ SDL.Rect (xPos thingPad) (yPos secs) 10 10
         SDL.renderPresent rend
 
       doFrame :: D.Game -> Word32 -> IO ()
