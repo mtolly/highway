@@ -11,8 +11,26 @@ import qualified Data.Map as Map
 import qualified Drums as D
 import qualified Load
 
+import qualified Sound.OpenAL as AL
+import Sound.OpenAL (($=))
+import qualified Sound.File.Sndfile as Snd
+import qualified Sound.File.Sndfile.Buffer.Vector as SndV
+import qualified Data.Vector.Storable as V
+
 main :: IO ()
 main = do
+
+  srcL <- AL.genObjectName
+  srcR <- AL.genObjectName
+  AL.sourcePosition srcL $= AL.Vertex3 (-1) 0 0
+  AL.sourcePosition srcR $= AL.Vertex3 1    0 0
+  hsong <- Snd.openFile "song.ogg" Snd.ReadMode Snd.defaultInfo
+
+  -- For now, just load upfront
+  (_, Just buf) <- Snd.hGetContents hsong
+  Snd.hClose hsong
+  let vect = SndV.fromBuffer buf :: V.Vector Int16
+
   0 <- SDL.init $ SDL.initFlagTimer .|. SDL.initFlagVideo
   Img.imgInit [Img.InitPNG]
   window <- throwIfNull "Couldn't make window" $
